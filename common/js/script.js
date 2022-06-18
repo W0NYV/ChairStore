@@ -5,8 +5,12 @@ let gl,
     VAO,
     indexBuffer,
     indices,
+    lastTime,
+    angle = 0,
     projectionMatrix = mat4.create(),
-    modelViewMatrix = mat4.create();
+    modelViewMatrix = mat4.create(),
+    normalMatrix = mat4.create(),
+    lightDirection = [-0.25, -0.25, -0.25];
 
 function getShader() {
 
@@ -23,8 +27,11 @@ function getShader() {
             program = po.createProgram(vs, fs);
 
             program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+            program.aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
             program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
             program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
+            program.uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
+            program.uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
             
             resolve();
             
@@ -36,6 +43,8 @@ function initBuffers() {
     const vertices = sphere.vertices;
 
     indices = sphere.indices;
+
+    const normals = utils.calculateNormals(vertices, indices);
 
     VAO = gl.createVertexArray();
 
@@ -50,6 +59,13 @@ function initBuffers() {
     gl.enableVertexAttribArray(program.aVertexPosition);
     gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
 
+    //法線
+    const normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(program.aVertexNormal);
+    gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
+
     indexBuffer = gl.createBuffer();
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -59,6 +75,7 @@ function initBuffers() {
     gl.bindVertexArray(null);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
 }
 
 function draw() {
@@ -70,20 +87,16 @@ function draw() {
     mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
     mat4.identity(modelViewMatrix);
     mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -1.5]);
-    mat4.rotate(modelViewMatrix, modelViewMatrix, 0 * Math.PI / 180, [0, 1, 0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, 90 * Math.PI / 180, [1, 0, 0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, angle * Math.PI / 180, [0, 0, 1]);
 
+    mat4.copy(normalMatrix, modelViewMatrix);
+    mat4.invert(normalMatrix, normalMatrix);
+    mat4.transpose(normalMatrix, normalMatrix);
 
+    gl.uniformMatrix4fv(program.uNormalMatrix, false, normalMatrix);
     gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
     gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
-
-    // mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 10, 10000);
-    // mat4.identity(modelViewMatrix);
-    // mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -5]);
-    // //mat4.rotate(modelViewMatrix, modelViewMatrix, 30 * Math.PI / 180, [1, 0, 0]);
-    // //mat4.rotate(modelViewMatrix, modelViewMatrix, 30 * Math.PI / 180, [0, 1, 0]);
-
-    // gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
-    // gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
 
     gl.bindVertexArray(VAO);
     
@@ -91,6 +104,21 @@ function draw() {
 
     gl.bindVertexArray(null);
 
+}
+
+function animate() {
+    let timeNow = new Date().getTime();
+    if(lastTime) {
+        const elapsed = timeNow - lastTime;
+        angle += (90 * elapsed) / 10000.0;
+    }
+    lastTime = timeNow;
+}
+
+function render() {
+    requestAnimationFrame(render);
+    animate();
+    draw();
 }
 
 function init() {
@@ -105,12 +133,17 @@ function init() {
     // Retrieve a WebGL context
     gl = utils.getGLContext(canvas);
     // Set the clear color to be black
-    gl.clearColor(0, 0, 0, 1);
+    gl.clearColor(1.0, 1.0, 1.0, 1);
+    gl.clearDepth(100);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+
 
     // Call the functions in an appropriate order
     getShader().then(() => {
         initBuffers();
-        draw();
+        gl.uniform3fv(program.uLightDirection, lightDirection);
+        render();
     });
   }
 
