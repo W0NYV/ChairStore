@@ -35,9 +35,7 @@ const po = {
         const program = gl.createProgram();
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
-    
-        console.log(vs);
-    
+        
         gl.linkProgram(program);
     
         if(gl.getProgramParameter(program, gl.LINK_STATUS)) {

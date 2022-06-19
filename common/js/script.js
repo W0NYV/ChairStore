@@ -2,9 +2,10 @@
 
 let gl,
     program,
-    VAO,
-    indexBuffer,
-    indices,
+    objects = [],
+    // VAO,
+    // indexBuffer,
+    // indices,
     lastTime,
     angle = 0,
     projectionMatrix = mat4.create(),
@@ -39,70 +40,55 @@ function getShader() {
     });
 }
 
-function initBuffers() {
-    const vertices = sphere.vertices;
+function initModels() {
 
-    indices = sphere.indices;
+    const floor = modelData.floor(80, 2);
 
-    const normals = utils.calculateNormals(vertices, indices);
-
-    VAO = gl.createVertexArray();
-
-    gl.bindVertexArray(VAO);
-
-    const vertexBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    
-    gl.enableVertexAttribArray(program.aVertexPosition);
-    gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
-
-    //法線
-    const normalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(program.aVertexNormal);
-    gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
-
-    indexBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-    gl.bindVertexArray(null);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
+    modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
+    modelData.initBuffers(floor.vertices, floor.indices, "LINE", objects);
+    console.log(objects);
 }
 
 function draw() {
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-
     mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
-    mat4.identity(modelViewMatrix);
-    mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -1.5]);
-    mat4.rotate(modelViewMatrix, modelViewMatrix, 90 * Math.PI / 180, [1, 0, 0]);
-    mat4.rotate(modelViewMatrix, modelViewMatrix, angle * Math.PI / 180, [0, 0, 1]);
 
-    mat4.copy(normalMatrix, modelViewMatrix);
-    mat4.invert(normalMatrix, normalMatrix);
-    mat4.transpose(normalMatrix, normalMatrix);
+    try {
+        objects.forEach(object => {
 
-    gl.uniformMatrix4fv(program.uNormalMatrix, false, normalMatrix);
-    gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
-    gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
+            mat4.identity(modelViewMatrix);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -10.5]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, 40 * Math.PI / 180, [1, 0, 0]);
+            //mat4.rotate(modelViewMatrix, modelViewMatrix, angle * Math.PI / 180, [0, 0, 1]);
 
-    gl.bindVertexArray(VAO);
-    
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+            mat4.copy(normalMatrix, modelViewMatrix);
+            mat4.invert(normalMatrix, normalMatrix);
+            mat4.transpose(normalMatrix, normalMatrix);
 
-    gl.bindVertexArray(null);
+            gl.uniformMatrix4fv(program.uNormalMatrix, false, normalMatrix);
+            gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
+            gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
+
+            gl.bindVertexArray(object.vao);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, object.ibo);
+            
+            if(object.mode == "TRI") {
+                gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+            } else if(object.mode == "LINE") {
+                gl.drawElements(gl.LINES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+            }
+
+            gl.bindVertexArray(null);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        });
+    } catch(error) {
+        console.error(error);
+    }
 
 }
 
@@ -141,7 +127,8 @@ function init() {
 
     // Call the functions in an appropriate order
     getShader().then(() => {
-        initBuffers();
+        //initBuffers();
+        initModels();
         gl.uniform3fv(program.uLightDirection, lightDirection);
         render();
     });
