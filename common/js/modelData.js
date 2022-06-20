@@ -52,6 +52,57 @@ const modelData = {
     
     },
 
+    initBuffers4Json(filePath, mode, _objects) {
+      return fetch(filePath)
+      .then(res => res.json())
+      .then(mData => {
+        const data = {};
+        const vertices = mData.position;
+        const indices = mData.index;  
+        data.indices = indices;
+    
+        const normals = utils.calculateNormals(vertices, indices);
+    
+        const vao = gl.createVertexArray();
+    
+        gl.bindVertexArray(vao);
+    
+        const vertexBuffer = gl.createBuffer();
+    
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        
+        gl.enableVertexAttribArray(program.aVertexPosition);
+        gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+    
+        //法線
+        const normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(program.aVertexNormal);
+        gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
+    
+        const indexBuffer = gl.createBuffer();
+    
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        
+        data.vao = vao;
+        data.ibo = indexBuffer;
+        data.mode = mode;
+        
+        _objects.push(data);
+
+        //バインド解除
+        gl.bindVertexArray(vao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+      })
+
+    },
+
     //以下モデルたち
     
     //床
@@ -92,6 +143,6 @@ const modelData = {
         data.indices = i;
         
         return data;
-      }
+    }
 
 };

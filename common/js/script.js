@@ -52,7 +52,12 @@ function initModels() {
 
     const floor = modelData.floor(80, 2);
 
-    modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair001.json', "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair002.json', "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair003.json', "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair004.json', "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", objects);
+    //modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
     modelData.initBuffers(floor.vertices, floor.indices, "LINE", objects);
     console.log(objects);
 }
@@ -69,9 +74,9 @@ function draw() {
         objects.forEach(object => {
 
             mat4.identity(modelViewMatrix);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -10.5 + zoom]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, -40 + mouseY * Math.PI / 180, [1, 0, 0]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, mouseX * Math.PI / 180, [0, 1, 0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -100 + zoom]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, 120 + mouseY * Math.PI / 180, [1, 0, 0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, 180 + mouseX * Math.PI / 180, [0, 1, 0]);
 
             mat4.copy(normalMatrix, modelViewMatrix);
             mat4.invert(normalMatrix, normalMatrix);
