@@ -2,7 +2,7 @@
 
 const modelData = {
 
-    initBuffers(_vertices, _indices, mode, _objects) {
+    initBuffers(_vertices, _indices, mode, color, _objects) {
 
         const data = {};
 
@@ -42,6 +42,7 @@ const modelData = {
         data.vao = vao;
         data.ibo = indexBuffer;
         data.mode = mode;
+        data.color = color;
         
         _objects.push(data);
 
@@ -52,7 +53,7 @@ const modelData = {
     
     },
 
-    initBuffers4Json(filePath, mode, _objects) {
+    initBuffers4Json(filePath, mode, color, _objects) {
       return fetch(filePath)
       .then(res => res.json())
       .then(mData => {
@@ -92,6 +93,7 @@ const modelData = {
         data.vao = vao;
         data.ibo = indexBuffer;
         data.mode = mode;
+        data.color = color;
         
         _objects.push(data);
 
