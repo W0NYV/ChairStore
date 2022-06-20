@@ -16,7 +16,9 @@ let gl,
     currentColor,
     colors = [[1.0, 0.0, 0.0],
               [0.0, 1.0, 0.0],
-              [0.0, 0.0, 1.0]];
+              [0.0, 0.0, 1.0],
+              [0.2, 0.2, 0.2],
+              [0.8, 0.8, 0.8]];
 
 function getShader() {
 
@@ -67,11 +69,11 @@ function draw() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
+    
     mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
 
     try {
-        objects.forEach(object => {
+        objects.forEach((object, index) => {
 
             mat4.identity(modelViewMatrix);
             mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -100 + zoom]);
@@ -91,18 +93,28 @@ function draw() {
             
             if(object.mode == "TRI") {
 
-                switch (currentColor) {
-                    case 'red':
-                        gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                switch (index) {
+                    case 5:
+                        gl.uniform3fv(program.uDiffuseColor, colors[4]);
                         break;
-                    case 'green':
-                        gl.uniform3fv(program.uDiffuseColor, colors[1]);
+                    case 3:
+                        switch (currentColor) {
+                            case 'red':
+                                gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                                break;
+                            case 'green':
+                                gl.uniform3fv(program.uDiffuseColor, colors[1]);
+                                break;
+                            case 'blue':
+                                gl.uniform3fv(program.uDiffuseColor, colors[2]);
+                                break;
+                            default:
+                                gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                        }
                         break;
-                    case 'blue':
-                        gl.uniform3fv(program.uDiffuseColor, colors[2]);
-                        break;
+                    
                     default:
-                        gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                        gl.uniform3fv(program.uDiffuseColor, colors[3]); 
                 }
 
                 gl.uniform1i(program.uIsWireFrame, false);
