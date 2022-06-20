@@ -57,9 +57,9 @@ const control = {
     //ほんとはよくない書き方だが一時的に
     palette() {
 
-        const info = document.getElementById('info');
+        const colorPalette = document.getElementById('color-palette');
     
-        info.addEventListener('change', function() {
+        colorPalette.addEventListener('change', function() {
             let elements = document.getElementsByName('color');
             let len = elements.length;
             let checkValue = '';

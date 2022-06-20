@@ -61,7 +61,6 @@ function initModels() {
     modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", "black", objects);
     //modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
     modelData.initBuffers(floor.vertices, floor.indices, "LINE", "black", objects);
-    console.log(objects);
 }
 
 function draw() {
@@ -168,7 +167,6 @@ function init() {
     gl.clearDepth(100);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-
 
     // Call the functions in an appropriate order
     getShader().then(() => {
