@@ -54,13 +54,13 @@ function initModels() {
 
     const floor = modelData.floor(80, 2);
 
-    modelData.initBuffers4Json('./common/lib/chair/chair001.json', "TRI", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair002.json', "TRI", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair003.json', "TRI", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair004.json', "TRI", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair001.json', "TRI", "palette", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair002.json', "TRI", "white", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair003.json', "TRI", "black", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair004.json', "TRI", "black", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", "black", objects);
     //modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
-    modelData.initBuffers(floor.vertices, floor.indices, "LINE", objects);
+    modelData.initBuffers(floor.vertices, floor.indices, "LINE", "black", objects);
     console.log(objects);
 }
 
@@ -93,11 +93,14 @@ function draw() {
             
             if(object.mode == "TRI") {
 
-                switch (index) {
-                    case 5:
+                switch (object.color) {
+                    case "black":
+                        gl.uniform3fv(program.uDiffuseColor, colors[3]);
+                        break;
+                    case "white":
                         gl.uniform3fv(program.uDiffuseColor, colors[4]);
                         break;
-                    case 3:
+                    case "palette":
                         switch (currentColor) {
                             case 'red':
                                 gl.uniform3fv(program.uDiffuseColor, colors[0]);
@@ -112,9 +115,6 @@ function draw() {
                                 gl.uniform3fv(program.uDiffuseColor, colors[0]);
                         }
                         break;
-                    
-                    default:
-                        gl.uniform3fv(program.uDiffuseColor, colors[3]); 
                 }
 
                 gl.uniform1i(program.uIsWireFrame, false);
