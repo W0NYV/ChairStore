@@ -26,6 +26,10 @@
     font-size: 2rem;
 }
 
+#next-chair {
+    position: fixed;
+}
+
 #color-palette {
     border: 1px solid #444444;
     border-radius: 5px;

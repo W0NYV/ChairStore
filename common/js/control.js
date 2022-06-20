@@ -73,7 +73,14 @@ const control = {
             //console.log(checkValue);
             currentColor = checkValue;
         });
-    }
+    },
 
+    pressNextChairButton() {
+        chairNumber++;
+        if(chairNumber > 1) {
+            chairNumber = 0;
+        } 
+        console.log(chairNumber);
+    }
 
 };
