@@ -9,14 +9,26 @@
     <link rel="stylesheet" href="./common/lib/normalize.css">
     <script type="text/javascript" src="./common/lib/gl-matrix.js"></script>
 
+    <link rel="stylesheet" href="./common/lib/style.css">
     <script type="text/javascript" src="./common/js/sphere.js"></script>
     <script type="text/javascript" src="./common/js/modelData.js"></script>
+    <script type="text/javascript" src="./common/js/control.js"></script>
     <script type="text/javascript" src="./common/js/program.js"></script>
     <script type="text/javascript" src="./common/js/utils.js"></script>
     <script type="text/javascript" src="./common/js/script.js"></script>
 
 </head>
 <body>
+    <div id="info">
+        <form id="palette">
+            <label><input type="radio" name="color" value="red" checked>赤</label>
+            <label><input type="radio" name="color" value="green">緑</label>
+            <label><input type="radio" name="color" value="blue">青</label>
+        </form>
+    </div>    
+    <div>
+        <input type="button" value="Check" id="checkButton">
+    </div>
     <canvas id="webgl-canvas">
         Your browser does not support the HTML5 canvas element.
     </canvas>

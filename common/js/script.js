@@ -3,15 +3,20 @@
 let gl,
     program,
     objects = [],
-    // VAO,
-    // indexBuffer,
-    // indices,
     lastTime,
     angle = 0,
+    mouseX = 0,
+    mouseY = 0,
+    zoom = 0,
+    mousePressed = false,
     projectionMatrix = mat4.create(),
     modelViewMatrix = mat4.create(),
     normalMatrix = mat4.create(),
-    lightDirection = [-0.25, -0.25, -0.25];
+    lightDirection = [-0.25, -0.25, -0.25],
+    currentColor,
+    colors = [[1.0, 0.0, 0.0],
+              [0.0, 1.0, 0.0],
+              [0.0, 0.0, 1.0]];
 
 function getShader() {
 
@@ -29,10 +34,13 @@ function getShader() {
 
             program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
             program.aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
+
             program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
             program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
             program.uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
             program.uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
+            program.uDiffuseColor = gl.getUniformLocation(program, 'uDiffuseColor');
+            program.uIsWireFrame = gl.getUniformLocation(program, 'uIsWireFrame');
             
             resolve();
             
@@ -61,9 +69,9 @@ function draw() {
         objects.forEach(object => {
 
             mat4.identity(modelViewMatrix);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -10.5]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, 40 * Math.PI / 180, [1, 0, 0]);
-            //mat4.rotate(modelViewMatrix, modelViewMatrix, angle * Math.PI / 180, [0, 0, 1]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -10.5 + zoom]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, -40 + mouseY * Math.PI / 180, [1, 0, 0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, mouseX * Math.PI / 180, [0, 1, 0]);
 
             mat4.copy(normalMatrix, modelViewMatrix);
             mat4.invert(normalMatrix, normalMatrix);
@@ -77,9 +85,29 @@ function draw() {
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, object.ibo);
             
             if(object.mode == "TRI") {
+
+                switch (currentColor) {
+                    case 'red':
+                        gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                        break;
+                    case 'green':
+                        gl.uniform3fv(program.uDiffuseColor, colors[1]);
+                        break;
+                    case 'blue':
+                        gl.uniform3fv(program.uDiffuseColor, colors[2]);
+                        break;
+                    default:
+                        gl.uniform3fv(program.uDiffuseColor, colors[0]);
+                }
+
+                gl.uniform1i(program.uIsWireFrame, false);
                 gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+            
             } else if(object.mode == "LINE") {
+              
+                gl.uniform1i(program.uIsWireFrame, true);
                 gl.drawElements(gl.LINES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+            
             }
 
             gl.bindVertexArray(null);
@@ -127,12 +155,13 @@ function init() {
 
     // Call the functions in an appropriate order
     getShader().then(() => {
-        //initBuffers();
         initModels();
+        control.palette();
+        control.cameraControl();
         gl.uniform3fv(program.uLightDirection, lightDirection);
         render();
     });
-  }
+}
 
 //ドキュメントが読み込まれたときに一度だけ実行
 window.onload = init;
