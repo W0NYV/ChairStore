@@ -3,11 +3,14 @@
 let gl,
     program,
     objects = [],
+    chair1 = [],
+    chair2 = [],
     lastTime,
     angle = 0,
     mouseX = 0,
     mouseY = 0,
     zoom = 0,
+    chairNumber = 0,
     mousePressed = false,
     projectionMatrix = mat4.create(),
     modelViewMatrix = mat4.create(),
@@ -54,12 +57,19 @@ function initModels() {
 
     const floor = modelData.floor(80, 2);
 
-    modelData.initBuffers4Json('./common/lib/chair/chair001.json', "TRI", "palette", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair002.json', "TRI", "white", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair003.json', "TRI", "black", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair004.json', "TRI", "black", objects);
-    modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", "black", objects);
-    //modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", objects);
+    modelData.initBuffers4Json('./common/lib/chair/chair001.json', "TRI", "palette", chair1);
+    modelData.initBuffers4Json('./common/lib/chair/chair002.json', "TRI", "white", chair1);
+    modelData.initBuffers4Json('./common/lib/chair/chair003.json', "TRI", "black", chair1);
+    modelData.initBuffers4Json('./common/lib/chair/chair004.json', "TRI", "black", chair1);
+    modelData.initBuffers4Json('./common/lib/chair/chair005.json', "TRI", "black", chair1);
+    
+    modelData.initBuffers4Json('./common/lib/chair2/chair2_001.json', "TRI", "palette", chair2);
+    modelData.initBuffers4Json('./common/lib/chair2/chair2_002.json', "TRI", "white", chair2);
+    modelData.initBuffers4Json('./common/lib/chair2/chair2_003.json', "TRI", "white", chair2);
+    modelData.initBuffers4Json('./common/lib/chair2/chair2_004.json', "TRI", "white", chair2);
+    modelData.initBuffers4Json('./common/lib/chair2/chair2_005.json', "TRI", "white", chair2);
+
+    // modelData.initBuffers(sphere.vertices, sphere.indices, "TRI", "palette", objects);
     modelData.initBuffers(floor.vertices, floor.indices, "LINE", "black", objects);
 }
 
@@ -71,8 +81,19 @@ function draw() {
     
     mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
 
+    gachiDraw(objects);        
+
+    if(chairNumber == 0) {
+        gachiDraw(chair2);
+    } else if(chairNumber == 1) {
+        gachiDraw(chair1);
+    }
+}
+
+//ガチの描画
+function gachiDraw(_objects) {
     try {
-        objects.forEach((object, index) => {
+        _objects.forEach((object, index) => {
 
             mat4.identity(modelViewMatrix);
             mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -100 + zoom]);
@@ -133,7 +154,6 @@ function draw() {
     } catch(error) {
         console.error(error);
     }
-
 }
 
 function animate() {
