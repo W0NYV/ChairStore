@@ -1,29 +1,57 @@
-* {
-    box-sizing:content-box;
+@font-face {
+	font-family: 'MyFont';
+	src: url(./MANIFESTO.ttf);
+}
+
+#webgl-canvas{
+	display: block;
+}
+
+html, #wrapper{
+	width: 100%;
+	height: 100%;
 }
 
 body {
     background: red;
+    width: 100%;
+    height: 100%;
+    user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select: none;
+    -moz-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-drag:none;
+    -khtml-user-drag:none;
 }
+
+body.no_scroll{
+    overflow: hidden;
+ }
 
 /* ロゴ */
 #logo {
     position: fixed;
+    inset: 0;
+    margin-top: auto;
+    margin-bottom: auto;
     margin-left: 2em;
 }
 
 #logo-text {
     color: #444444;
+    font-family: MyFont;
 }
 
 /* 買いますボタン */
 #buy {
     position: fixed;
     height: 50px;
-    width: 200px;
+    width: 300px;
     inset: 0;
-    margin: 35em auto 1em;
+    margin: 40% auto 0;
     text-align: center;
+    vertical-align: middle;
 
     border-radius: 50px;
     background: linear-gradient(145deg, #f5ffff, #cedae6);
@@ -34,6 +62,7 @@ body {
 #buy-text {
     color: #b6c4d2;
     font-size: 2rem;
+    font-family: MyFont;
 }
 
 #buy-text:hover {
@@ -44,16 +73,16 @@ body {
 #next-chair {
     position: fixed;
     inset: 0;
-    margin-top: 16em;
-    margin-left: 80em;
+    margin-top: 20%;
+    margin-left: 70%;
     text-align: center;
 }
 
 #next-chair-left {
     position: fixed;
     inset: 0;
-    margin-top: 16em;
-    margin-right: 80em;
+    margin-top: 20%;
+    margin-right: 70%;
     text-align: center;
 }
 
@@ -139,17 +168,17 @@ body {
 
 #next-chair-text {
     color: #333;
+    font-family: MyFont;
 }
 
 /* カラーパレット */
 #color-palette {
-    /* border: 1px solid #444444;
-    border-radius: 5px; */
     position: fixed;
-    /* background: black; */
-    right: 0;
-    margin-top: 2em;
-    margin-right: 2em;
+    width: 300px;
+    height: 45px;
+    inset: 0;
+    margin-left: 75%;
+    margin-top: 2%;
     padding: 10px 20px;
 
     border-radius: 50px;
@@ -171,7 +200,7 @@ label::after {
     border-radius: 50%;
     position: absolute;
     transform: translateY(-50%);
-    top: 50%;
+    top: 100%;
 }
   
   #red-label::before {
@@ -194,6 +223,15 @@ label::after {
 
   #blue-label::before {
     background-color: #00f;
+    border: 1px solid rgba(0,0,0,0);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    left: 14px;
+  }
+
+  #white-label::before {
+    background-color: #fff;
     border: 1px solid rgba(0,0,0,0);
     border-radius: 50%;
     width: 32px;

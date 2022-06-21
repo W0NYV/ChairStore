@@ -5,9 +5,11 @@ uniform vec3 uLightDirection;
 uniform mat4 uNormalMatrix;
 uniform bool uIsWireFrame;
 uniform vec3 uDiffuseColor;
+uniform sampler2D uSampler;
 
 in vec3 vNormal;
 in vec3 vEyeVector;
+in vec2 vTexCoord;
 
 out vec4 fragColor;
 
@@ -38,6 +40,7 @@ void main(void) {
         fragColor = vec4(vec3(0.75), 1.0);
     } else {
         Id *= vec4(uDiffuseColor, 1.0);
-        fragColor = vec4(vec3(Id+Is+Ia), 1.0);
+        //fragColor = texture(uSampler, vTexCoord);
+        fragColor = vec4(vec3(Id+Is+Ia), 1.0) * texture(uSampler, vTexCoord);
     }
 }

@@ -2,8 +2,6 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHAIR STORE</title>
 
     <link rel="stylesheet" href="./common/lib/normalize.css">
@@ -19,7 +17,8 @@
 
 </head>
 <body>
-    <div id="logo"><h1 id="logo-text">おいすのおみせ</h1></div>
+    <div id="wrapper"><canvas id="webgl-canvas">Your browser does not support the HTML5 canvas element.</canvas></div>
+    <div id="logo"><h1 id="logo-text">CHAIR STORE</h1></div>
     <div id="color-palette">
         <form id="palette">
             <ul>
@@ -29,8 +28,8 @@
             <label for="green" id="green-label"></label>
             <input class="visually-hidden" type="radio" name="color" value="blue" id="blue">
             <label for="blue" id="blue-label"></label>
-            <input class="visually-hidden" type="radio" name="color" value="red" id="red">
-            <label for="red" id="red-label"></label>
+            <input class="visually-hidden" type="radio" name="color" value="white" id="white">
+            <label for="white" id="white-label"></label>
             <input class="visually-hidden" type="radio" name="color" value="red" id="red">
             <label for="red" id="red-label"></label>
             </ul>
@@ -44,9 +43,6 @@
         <p id="next-chair-text">Next chair</p>
         <button id="next-chair-button-left" type="button" onClick="control.pressNextChairButton();"></button>
     </div>
-    <div id="buy"><a href="https://iidesuyo.com/" id="buy-text">BUY NOW</a></div>    
-    <canvas id="webgl-canvas">
-        Your browser does not support the HTML5 canvas element.
-    </canvas>
+    <div id="buy"><a href="https://iidesuyo.com/" target="_blank" id="buy-text">BUY NOW</a></div>    
 </body>
 </html>

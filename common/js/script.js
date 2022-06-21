@@ -2,26 +2,33 @@
 
 let gl,
     program,
+
     objects = [],
     chair1 = [],
     chair2 = [],
+    
     lastTime,
+    
     angle = 0,
     mouseX = 0,
     mouseY = 0,
     zoom = 0,
     chairNumber = 0,
     mousePressed = false,
+
     projectionMatrix = mat4.create(),
     modelViewMatrix = mat4.create(),
     normalMatrix = mat4.create(),
+
+    texture,
     lightDirection = [-0.25, -0.25, -0.25],
     currentColor,
     colors = [[1.0, 0.0, 0.0],
               [0.0, 1.0, 0.0],
               [0.0, 0.0, 1.0],
               [0.2, 0.2, 0.2],
-              [0.8, 0.8, 0.8]];
+              [0.8, 0.8, 0.8],
+              [1.0, 1.0, 1.0]];
 
 function getShader() {
 
@@ -39,6 +46,7 @@ function getShader() {
 
             program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
             program.aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
+            program.aTexCoord = gl.getAttribLocation(program, 'aTexCoord');
 
             program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
             program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
@@ -46,6 +54,7 @@ function getShader() {
             program.uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
             program.uDiffuseColor = gl.getUniformLocation(program, 'uDiffuseColor');
             program.uIsWireFrame = gl.getUniformLocation(program, 'uIsWireFrame');
+            program.uSampler = gl.getUniformLocation(program, 'uSampler');
             
             resolve();
             
@@ -73,6 +82,20 @@ function initModels() {
     modelData.initBuffers(floor.vertices, floor.indices, "LINE", "black", objects);
 }
 
+function loadImg() {
+    texture = gl.createTexture();
+    const image = new Image();
+    image.src = './common/lib/img/sea.png';
+
+    image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    };
+}
+
 function draw() {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -96,8 +119,9 @@ function gachiDraw(_objects) {
         _objects.forEach((object, index) => {
 
             mat4.identity(modelViewMatrix);
-            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -100 + zoom]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, 120 + mouseY * Math.PI / 180, [1, 0, 0]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -70 + zoom]);
+            mat4.translate(modelViewMatrix, modelViewMatrix, [0, -10, 0]);
+            mat4.rotate(modelViewMatrix, modelViewMatrix, 120 + -mouseY * Math.PI / 180, [1, 0, 0]);
             mat4.rotate(modelViewMatrix, modelViewMatrix, 180 + mouseX * Math.PI / 180, [0, 1, 0]);
 
             mat4.copy(normalMatrix, modelViewMatrix);
@@ -111,6 +135,12 @@ function gachiDraw(_objects) {
             gl.bindVertexArray(object.vao);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, object.ibo);
             
+            if(object.texCoord) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.uniform1i(program.uSampler, 0);
+            }
+
             if(object.mode == "TRI") {
 
                 switch (object.color) {
@@ -130,6 +160,9 @@ function gachiDraw(_objects) {
                                 break;
                             case 'blue':
                                 gl.uniform3fv(program.uDiffuseColor, colors[2]);
+                                break;
+                            case 'white':
+                                gl.uniform3fv(program.uDiffuseColor, colors[5]);
                                 break;
                             default:
                                 gl.uniform3fv(program.uDiffuseColor, colors[0]);
@@ -176,20 +209,14 @@ function init() {
     const canvas = utils.getCanvas('webgl-canvas');
     utils.autoResizeCanvas(canvas);
 
-    // Set the canvas to the size of the screen
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
     // Retrieve a WebGL context
     gl = utils.getGLContext(canvas);
+
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clearDepth(100);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-
-    // gl.enable(gl.BLEND);
-    // gl.blendEquation(gl.FUNC_ADD);
-    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
     // Call the functions in an appropriate order
     getShader().then(() => {
@@ -197,6 +224,7 @@ function init() {
         control.palette();
         control.cameraControl();
         gl.uniform3fv(program.uLightDirection, lightDirection);
+        loadImg();
         render();
     });
 }

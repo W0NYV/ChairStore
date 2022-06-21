@@ -59,7 +59,8 @@ const modelData = {
       .then(mData => {
         const data = {};
         const vertices = mData.position;
-        const indices = mData.index;  
+        const indices = mData.index;
+        const texCoord = mData.texCoord;  
         data.indices = indices;
     
         const normals = utils.calculateNormals(vertices, indices);
@@ -67,13 +68,11 @@ const modelData = {
         const vao = gl.createVertexArray();
     
         gl.bindVertexArray(vao);
-    
-        const vertexBuffer = gl.createBuffer();
-    
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         
+        //頂点座標
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         gl.enableVertexAttribArray(program.aVertexPosition);
         gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
     
@@ -84,6 +83,13 @@ const modelData = {
         gl.enableVertexAttribArray(program.aVertexNormal);
         gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
     
+        //テクスチャ座標
+        const textureBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoord), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(program.aTexCoord);
+        gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 0, 0);
+
         const indexBuffer = gl.createBuffer();
     
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -94,6 +100,7 @@ const modelData = {
         data.ibo = indexBuffer;
         data.mode = mode;
         data.color = color;
+        data.texCoord = texCoord;
         
         _objects.push(data);
 
