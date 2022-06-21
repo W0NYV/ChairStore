@@ -182,11 +182,14 @@ function init() {
 
     // Retrieve a WebGL context
     gl = utils.getGLContext(canvas);
-    // Set the clear color to be black
-    gl.clearColor(1.0, 1.0, 1.0, 1);
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clearDepth(100);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
+
+    // gl.enable(gl.BLEND);
+    // gl.blendEquation(gl.FUNC_ADD);
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // Call the functions in an appropriate order
     getShader().then(() => {

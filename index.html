@@ -22,12 +22,28 @@
     <div id="logo"><h1 id="logo-text">おいすのおみせ</h1></div>
     <div id="color-palette">
         <form id="palette">
-            <label><input type="radio" name="color" value="red" checked>赤</label>
-            <label><input type="radio" name="color" value="green">緑</label>
-            <label><input type="radio" name="color" value="blue">青</label>
+            <ul>
+            <input class="visually-hidden" type="radio" name="color" value="red" id="red" checked>
+            <label for="red" id="red-label"></label>
+            <input class="visually-hidden" type="radio" name="color" value="green" id="green">
+            <label for="green" id="green-label"></label>
+            <input class="visually-hidden" type="radio" name="color" value="blue" id="blue">
+            <label for="blue" id="blue-label"></label>
+            <input class="visually-hidden" type="radio" name="color" value="red" id="red">
+            <label for="red" id="red-label"></label>
+            <input class="visually-hidden" type="radio" name="color" value="red" id="red">
+            <label for="red" id="red-label"></label>
+            </ul>
         </form>
     </div>
-    <div id="next-chair"><button id="next-chair-button" type="button" onClick="control.pressNextChairButton();">WOW</button></div>
+    <div id="next-chair">
+        <p id="next-chair-text">Next chair</p>
+        <button id="next-chair-button" type="button" onClick="control.pressNextChairButton();"></button>
+    </div>
+    <div id="next-chair-left">
+        <p id="next-chair-text">Next chair</p>
+        <button id="next-chair-button-left" type="button" onClick="control.pressNextChairButton();"></button>
+    </div>
     <div id="buy"><a href="https://iidesuyo.com/" id="buy-text">BUY NOW</a></div>    
     <canvas id="webgl-canvas">
         Your browser does not support the HTML5 canvas element.
