@@ -49,8 +49,13 @@ const control = {
     
         window.onmousewheel = function(e){
             let z = e.wheelDelta / Math.abs(e.wheelDelta);
-            console.log(z);
-            zoom += z;
+            zoom += z*3.0;
+
+            if(zoom > 45) {
+                zoom = 45;
+            } else if(zoom < -150) {
+                zoom = -150;
+            }
         }
     },
     

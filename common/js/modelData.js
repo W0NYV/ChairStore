@@ -53,7 +53,7 @@ const modelData = {
     
     },
 
-    initBuffers4Json(filePath, mode, color, _objects) {
+    initBuffers4Json(filePath, mode, color, shiness, _objects) {
       return fetch(filePath)
       .then(res => res.json())
       .then(mData => {
@@ -101,6 +101,7 @@ const modelData = {
         data.mode = mode;
         data.color = color;
         data.texCoord = texCoord;
+        data.shiness = shiness;
         
         _objects.push(data);
 
